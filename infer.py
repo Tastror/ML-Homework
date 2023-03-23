@@ -18,42 +18,38 @@ model = Net(200).to(device)
 model.load_state_dict(torch.load(last_save_path))
 model.eval()
 
+
 def preprocess(image: Image):
 
-    # Convert the image to grayscale
+    # 反色归一预处理
     image = image.convert('L')
     image = image.resize((28, 28))
+    image = 1 - np.array(image, dtype=np.float32) / 255
 
     # 画板颜色比较淡，要加强一点
-    image_array = np.array(image)
-    threshold_value = 200
-    binary_array = 255 - np.where(image_array > threshold_value, image_array, 0)
+    image = np.sqrt(image)
 
-    # to PIL again (maybe dont need to do this)
-    binary_image = Image.fromarray(binary_array.astype('uint8'))
-    # show it
-    # print(binary_array)
-    # binary_image.show()
-    
-    transform = transforms.Compose([
-        transforms.Resize((28, 28)),
-        transforms.ToTensor(),
-    ])
-    
-    return transform(binary_image).unsqueeze(0)
+    # 查看效果
+    Image.fromarray(np.uint8(image * 255)).show()
+
+    # 扩展为张量
+    image = np.expand_dims(image.astype(np.float32) / 255, axis=2)
+    image = np.transpose(image, (2, 0, 1))
+    image = torch.from_numpy(image).unsqueeze(0)
+
+    return image
 
 
 def predict_digit(image):
-    # Preprocess the image
+
     preprocessed_image = preprocess(image)
-    
-    # Use the model to predict the digit
+
     with torch.no_grad():
         output = model(preprocessed_image.to(device))
         pred = output.argmax(dim=1, keepdim=True)
-    
-    # Return the predicted digit
+
     return pred.item()
+
 
 class HandDraw:
     def __init__(self):
@@ -109,11 +105,9 @@ class HandDraw:
         self.lock = True
         self.predict()
         self.lock = False
-    
 
     def predict(self):
 
-        # print(self.fig.canvas.tostring_rgb())
         buf = self.fig.canvas.tostring_rgb()
 
         # maybe enlarge 1.25 / 1.5 / ... times
@@ -121,7 +115,10 @@ class HandDraw:
         ncols, nrows = self.fig.canvas.get_width_height()
         enlarge = math.sqrt(all_len / (ncols * nrows * 3))
 
-        image = Image.frombytes('RGB', (int(ncols * enlarge), int(nrows * enlarge)), self.fig.canvas.tostring_rgb())
+        image = Image.frombytes(
+            'RGB', (int(ncols * enlarge), int(nrows * enlarge)),
+            self.fig.canvas.tostring_rgb()
+        )
         digit = predict_digit(image)
 
         # Print the predicted digit

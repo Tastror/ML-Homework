@@ -41,10 +41,11 @@ class Dataset(Dataset):
 
         # 添加通道维度，更换顺序（通道放在最前面）
         # 最终转变为标准的 [C, H, W] 张量
+        # <---            C              --->
+        #   <-- H -->
+        # [ [x, x, x], [x, x, x], [x, x, x] ]
         image = np.expand_dims(image, axis=2)
-        image = np.transpose(
-            image, (2, 0, 1)
-        )
+        image = np.transpose(image, (2, 0, 1))
 
         if self.transform:
             image = self.transform(image)
