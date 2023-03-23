@@ -33,6 +33,7 @@ class Net(nn.Module):
         self.classifier = nn.Sequential(
             nn.Linear(288, 256),
             nn.ReLU(inplace=True),
+            nn.Dropout(0.1),
             nn.Linear(256, 128),
             nn.ReLU(inplace=True),
             nn.Linear(128, label_num),

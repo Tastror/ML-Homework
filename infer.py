@@ -1,13 +1,22 @@
 import os
 import math
 import torch
+import argparse
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 
+parser = argparse.ArgumentParser(description='Process some integers.')
+parser.add_argument(
+    'model_name', metavar='model', type=str, nargs='?',
+    default="pt-torch-last.pt",
+    help='model name, save dir is weight/, default is pt-torch-last.pt'
+)
+args = parser.parse_args()
+print('use weight/', args.model_name, sep="")
+
 save_dir = 'weight'
-last_save_name = "pt-torch-last.pt"
-last_save_path = os.path.join(save_dir, last_save_name)
+last_save_path = os.path.join(save_dir, args.model_name)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print("deivce use", device)
