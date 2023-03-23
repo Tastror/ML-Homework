@@ -5,21 +5,21 @@ import torchvision.transforms as transforms
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
-from model.model_demo import Net
+from model.model_1 import Net
 
 save_dir = 'weight'
-last_save_name = "pt-torch-last.pt"
+last_save_name = "pt-torch-mnist.pt"
 last_save_path = os.path.join(save_dir, last_save_name)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print("deivce use", device)
 
-model = Net(200).to(device)
+model = Net(10).to(device)
 model.load_state_dict(torch.load(last_save_path))
 model.eval()
 
 
-def preprocess(image: Image):
+def preprocess(image: Image) -> torch.Tensor:
 
     # 反色归一预处理
     image = image.convert('L')
@@ -28,12 +28,13 @@ def preprocess(image: Image):
 
     # 画板颜色比较淡，要加强一点
     image = np.sqrt(image)
+    image = np.where(image > 0.5, 1, image)
 
     # 查看效果
-    Image.fromarray(np.uint8(image * 255)).show()
+    # Image.fromarray(np.uint8(image * 255)).show()
 
     # 扩展为张量
-    image = np.expand_dims(image.astype(np.float32) / 255, axis=2)
+    image = np.expand_dims(image, axis=2)
     image = np.transpose(image, (2, 0, 1))
     image = torch.from_numpy(image).unsqueeze(0)
 
