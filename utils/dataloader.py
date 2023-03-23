@@ -42,23 +42,38 @@ class Dataset(Dataset):
         index = index % self.data_shape[1]
         image = self.data[label][index]
 
+        # 反色预处理
+        image = 255 - np.array(image)
+
         # 增强
         if augmentation_type == 0:
             pass
         elif augmentation_type == 1:
-            image = np.roll(image, 3, axis=0)  # 平移操作
+            if index % 2 == 0:
+                image = np.roll(image, 3, axis=0)  # 平移操作
+            else:
+                image = np.roll(image, -3, axis=0)  # 平移操作
         elif augmentation_type == 2:
-            image = np.roll(image, -3, axis=0)  # 平移操作
+            if index % 2 == 0:
+                image = np.roll(image, 3, axis=1)  # 平移操作
+            else:
+                image = np.roll(image, -3, axis=1)  # 平移操作
         elif augmentation_type == 3:
-            image = np.roll(image, 3, axis=1)  # 平移操作
+            # 旋转操作
+            image = Image.fromarray(image)
+            image = image.rotate(10)
+            image = np.array(image)
         elif augmentation_type == 4:
-            image = np.roll(image, -3, axis=1)  # 平移操作
+            # 旋转操作
+            image = Image.fromarray(image)
+            image = image.rotate(-10)
+            image = np.array(image)
         elif augmentation_type == 5:
             # 缩放操作
             image = Image.fromarray(image)
             image = image.resize((24, 24), resample=Image.BILINEAR)
             image = np.array(image)
-            image = np.pad(image, (2, 2), 'constant', constant_values=255)
+            image = np.pad(image, (2, 2), 'constant', constant_values=0)
         elif augmentation_type == 6:
             # 缩放操作
             image = Image.fromarray(image)
@@ -66,8 +81,8 @@ class Dataset(Dataset):
             image = np.array(image)
             image = image[2:30, 2:30]
 
-        # 反色归一预处理
-        image = 1 - np.array(image, dtype=np.float32) / 255
+        # 归一预处理
+        image = np.array(image, dtype=np.float32) / 255
 
         # 添加通道维度，更换顺序（通道放在最前面）
         # 最终转变为标准的 [C, H, W] 张量

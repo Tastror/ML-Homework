@@ -27,6 +27,7 @@ train_data = DataLoader(train_dataset, batch_size=32, shuffle=True)
 test_data = DataLoader(test_dataset, batch_size=32, shuffle=False)
 label_num = train_dataset.data_shape[0]
 
+
 # 保存位置处理
 save_dir = 'weight'
 save_name = "pt-torch-" + datetime.now().strftime("%Y%m%d-%H%M%S") + ".pt"
