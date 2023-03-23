@@ -6,7 +6,7 @@ from datetime import datetime
 from torch.utils.data import DataLoader
 from torchvision.transforms import ToTensor
 from tqdm import tqdm
-from model.model_1 import Net
+from model.model_demo import Net
 
 # 数据读入 I（如果你使用 MNIST）
 # from torchvision.datasets import MNIST
@@ -32,7 +32,7 @@ save_dir = 'weight'
 save_name = "pt-torch-" + datetime.now().strftime("%Y%m%d-%H%M%S") + ".pt"
 last_save_name = "pt-torch-last.pt"
 save_path = os.path.join(save_dir, save_name)
-last_save_path = os.path.join(save_dir, save_name)
+last_save_path = os.path.join(save_dir, last_save_name)
 if not os.path.exists(save_dir):
     os.makedirs(save_dir)
 

@@ -1,18 +1,21 @@
+import os
 import math
 import torch
 import torchvision.transforms as transforms
-from PIL import Image
 import numpy as np
+from PIL import Image
 import matplotlib.pyplot as plt
-from model.model_1 import Net
+from model.model_demo import Net
 
-save_path = "./pt-torch.pt"
+save_dir = 'weight'
+last_save_name = "pt-torch-last.pt"
+last_save_path = os.path.join(save_dir, last_save_name)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print("deivce use", device)
 
-model = Net().to(device)
-model.load_state_dict(torch.load(save_path))
+model = Net(200).to(device)
+model.load_state_dict(torch.load(last_save_path))
 model.eval()
 
 def preprocess(image: Image):
@@ -20,6 +23,8 @@ def preprocess(image: Image):
     # Convert the image to grayscale
     image = image.convert('L')
     image = image.resize((28, 28))
+
+    # 画板颜色比较淡，要加强一点
     image_array = np.array(image)
     threshold_value = 200
     binary_array = 255 - np.where(image_array > threshold_value, image_array, 0)
