@@ -6,6 +6,7 @@ import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 
+
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument(
     'model_name', metavar='model', type=str, nargs='?',
@@ -15,13 +16,26 @@ parser.add_argument(
 args = parser.parse_args()
 print('use weight/', args.model_name, sep="")
 
+
+data_dir = 'dataset'
+data_name = 'NewDataset.txt'
+data_path = os.path.join(data_dir, data_name)
+data_description = []
+data_file = open(data_path)
+line = True
+while line:
+    line = data_file.readline()
+    data_description.append(line.strip())
+data_file.close()
+
+
 save_dir = 'weight'
 last_save_path = os.path.join(save_dir, args.model_name)
-
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print("deivce use", device)
 model = torch.load(last_save_path)
 model.eval()
+
 
 def preprocess(image: Image) -> torch.Tensor:
 
@@ -127,7 +141,9 @@ class HandDraw:
         digit = predict_digit(image)
 
         # Print the predicted digit
-        print("Predicted digit:", digit)
+        print("Predicted:", digit)
+        print(data_description[digit])
+        print()
 
 
 hd = HandDraw()
