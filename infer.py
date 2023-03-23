@@ -4,7 +4,7 @@ import torchvision.transforms as transforms
 from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
-from model_torch import Net
+from model.model_1 import Net
 
 save_path = "./pt-torch.pt"
 

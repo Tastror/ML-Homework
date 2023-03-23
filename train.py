@@ -18,8 +18,8 @@ from utils.dataloader import Dataset
 data_dir = 'dataset'
 data_name = 'NewDataset.mat'
 data_path = os.path.join(data_dir, data_name)
-train_dataset = Dataset(data_path, train=True, transform=ToTensor())
-test_dataset = Dataset(data_path, train=False, transform=ToTensor())
+train_dataset = Dataset(data_path, train=True)
+test_dataset = Dataset(data_path, train=False)
 
 # 数据转为 data
 train_data = DataLoader(train_dataset, batch_size=32, shuffle=True)
