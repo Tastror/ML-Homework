@@ -64,6 +64,8 @@ accuracy = Accuracy()
 num_epochs = 200
 acc_best = 0.0
 for epoch in range(num_epochs):
+
+    model.train()
     running_loss = 0.0
     running_acc = 0.0
     for images, labels in tqdm(train_data):
@@ -85,10 +87,11 @@ for epoch in range(num_epochs):
     )
 
     # save best
+    model.eval()
     with torch.no_grad():
         correct = 0
         total = 0
-        for images, labels in tqdm(test_data):
+        for images, labels in test_data:
             images = images.to(device)
             labels = labels.to(device)
 

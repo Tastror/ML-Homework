@@ -11,24 +11,21 @@ class Net(nn.Module):
             nn.BatchNorm2d(16),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2),
-            nn.Dropout(0.1),
+            nn.Dropout(0.2),
             nn.Conv2d(16, 32, kernel_size=3, padding=1),
             nn.BatchNorm2d(32),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2),
-            nn.Dropout(0.1),
+            nn.Dropout(0.25),
         )
 
         self.classifier = nn.Sequential(
             nn.Linear(1568, 512),
             nn.ReLU(inplace=True),
-            nn.Dropout(0.3),
-            nn.Linear(512, 256),
-            nn.ReLU(inplace=True),
-            nn.Dropout(0.3),
-            nn.Linear(256, label_num),
+            nn.Dropout(0.25),
+            nn.Linear(512, label_num)
         )
-    
+        
     def forward(self, x):
         x = self.conv_features(x)
         x = x.view(x.size(0), -1)

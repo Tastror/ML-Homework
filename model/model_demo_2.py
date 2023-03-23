@@ -1,4 +1,3 @@
-import torch
 import torch.nn as nn
 
 
@@ -27,16 +26,14 @@ class Net(nn.Module):
             nn.BatchNorm2d(32),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2),
-            nn.Dropout(0.2),
+            nn.Dropout(0.25),
         )
 
         self.classifier = nn.Sequential(
             nn.Linear(288, 256),
             nn.ReLU(inplace=True),
-            nn.Dropout(0.1),
             nn.Linear(256, 128),
             nn.ReLU(inplace=True),
-            nn.Dropout(0.1),
             nn.Linear(128, label_num),
         )
         
