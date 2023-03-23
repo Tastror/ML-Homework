@@ -5,16 +5,16 @@ import torchvision.transforms as transforms
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
-from model.model_1 import Net
+from model.model_demo_2 import Net
 
 save_dir = 'weight'
-last_save_name = "pt-torch-mnist.pt"
+last_save_name = "pt-torch-last.pt"
 last_save_path = os.path.join(save_dir, last_save_name)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print("deivce use", device)
 
-model = Net(10).to(device)
+model = Net(200).to(device)
 model.load_state_dict(torch.load(last_save_path))
 model.eval()
 

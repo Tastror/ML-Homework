@@ -6,7 +6,7 @@ from datetime import datetime
 from torch.utils.data import DataLoader
 from torchvision.transforms import ToTensor
 from tqdm import tqdm
-from model.model_demo import Net
+from model.model_demo_2 import Net
 
 # 数据读入 I（如果你使用 MNIST）
 # from torchvision.datasets import MNIST
@@ -60,7 +60,7 @@ class Accuracy:
 accuracy = Accuracy()
 
 # 训练模型
-num_epochs = 100
+num_epochs = 50
 for epoch in range(num_epochs):
     running_loss = 0.0
     running_acc = 0.0
