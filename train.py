@@ -45,6 +45,9 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 class Accuracy:
     def __init__(self):
+        self.clear()
+
+    def clear(self):
         self.correct = 0
         self.total = 0
 
@@ -65,47 +68,51 @@ num_epochs = 400
 acc_best = 0.0
 for epoch in range(num_epochs):
 
-    model.train()
     running_loss = 0.0
-    running_acc = 0.0
+    correct = 0
+    total = 0
+
+    model.train()
     for images, labels in tqdm(train_data):
         images = images.to(device)
         labels = labels.to(device)
 
         optimizer.zero_grad()
-
         outputs = model(images)
         loss = criterion(outputs, labels)
         loss.backward()
         optimizer.step()
-
         running_loss += loss.item()
         accuracy.update(outputs, labels)
 
     print(
-        f'\033[1;33mEpoch {epoch+1}/{num_epochs}, Loss: {running_loss/len(train_data):.4f}, Acc: {accuracy.compute():.4f}\033[0m'
+        f'\033[33mEpoch {epoch + 1}/{num_epochs}'
+        f', Loss: {running_loss / len(train_data):.4f}'
+        # this is not true in model.train()
+        f', (model.train) Accuracy: {accuracy.compute():.4f}\033[0m'
     )
+    accuracy.clear()
 
     # save best
     model.eval()
     with torch.no_grad():
         correct = 0
         total = 0
+
         for images, labels in test_data:
             images = images.to(device)
             labels = labels.to(device)
 
             outputs = model(images)
-            _, predicted = torch.max(outputs.data, 1)
+            accuracy.update(outputs, labels)
 
-            total += labels.size(0)
-            correct += (predicted == labels).sum().item()
-        acc_this_time = correct / total * 100.0
-        print(f'Test Accuracy: {acc_this_time:.4f}')
-        if acc_this_time > acc_best:
-            print(f'\033[1;32m{acc_best:.2f} => {acc_this_time:.2f}\033[0m')
-            acc_best = acc_this_time
+        print(f'\033[34mTest Accuracy: {accuracy.compute():.4f}\033[0m')
+
+        if accuracy.compute() > acc_best:
+            print(f'\033[1;32m{acc_best:.2f} => {accuracy.compute():.2f}\033[0m')
+            acc_best = accuracy.compute()
             torch.save(model, save_path)
+        accuracy.clear()
 
     torch.save(model, last_save_path)
 
@@ -120,7 +127,6 @@ with torch.no_grad():
 
         outputs = model(images)
         _, predicted = torch.max(outputs.data, 1)
-
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
 
