@@ -7,7 +7,7 @@ from datetime import datetime
 from torch.utils.data import DataLoader
 from torchvision.datasets import MNIST
 from utils.dataloader import Dataset
-from model.model_demo_2 import Net
+from model.model_demo_3 import Net
 
 # 数据读入（如果使用 MNIST）
 # train_dataset = MNIST(root='data/', train=True, transform=ToTensor(), download=True)
@@ -61,7 +61,7 @@ class Accuracy:
 accuracy = Accuracy()
 
 # 训练模型
-num_epochs = 200
+num_epochs = 400
 acc_best = 0.0
 for epoch in range(num_epochs):
 
