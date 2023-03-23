@@ -62,6 +62,7 @@ accuracy = Accuracy()
 
 # 训练模型
 num_epochs = 200
+acc_best = 0.0
 for epoch in range(num_epochs):
     running_loss = 0.0
     running_acc = 0.0
@@ -81,8 +82,27 @@ for epoch in range(num_epochs):
 
     print(f'Epoch {epoch+1}/{num_epochs}, Loss: {running_loss/len(train_data):.4f}, Acc: {accuracy.compute():.4f}')
 
-torch.save(model, save_path)
-torch.save(model, last_save_path)
+    # save best
+    model.eval()
+    with torch.no_grad():
+        correct = 0
+        total = 0
+        for images, labels in tqdm(test_data):
+            images = images.to(device)
+            labels = labels.to(device)
+
+            outputs = model(images)
+            _, predicted = torch.max(outputs.data, 1)
+
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+        acc_this_time = correct/total
+        print(f'Test Accuracy: {acc_this_time:.4f}')
+        if acc_this_time > acc_best:
+            print(f'\033[1;32m{acc_best} => {acc_this_time}\033[0m')
+            acc_best = acc_this_time
+            torch.save(model, save_path)
+            torch.save(model, last_save_path)
 
 # 测试模型
 model.eval()
@@ -99,4 +119,4 @@ with torch.no_grad():
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
 
-    print(f'Test Accuracy: {correct/total:.4f}')
+    print(f'Last Test Accuracy: {correct/total:.4f}')
