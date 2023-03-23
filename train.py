@@ -20,8 +20,7 @@ from model.model_demo_2 import Net
 data_dir = 'dataset'
 data_name = 'NewDataset.mat'
 data_path = os.path.join(data_dir, data_name)
-train_dataset = Dataset(data_path, train=True,
-                        transform=None, augmentation=False)
+train_dataset = Dataset(data_path, train=True, transform=None, augmentation=True)
 test_dataset = Dataset(data_path, train=False, transform=None)
 train_data = DataLoader(train_dataset, batch_size=32, shuffle=True)
 test_data = DataLoader(test_dataset, batch_size=32, shuffle=False)
@@ -98,10 +97,10 @@ for epoch in range(num_epochs):
 
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
-        acc_this_time = correct / total * 100
+        acc_this_time = correct / total * 100.0
         print(f'Test Accuracy: {acc_this_time:.4f}')
         if acc_this_time > acc_best:
-            print(f'\033[1;32m{acc_best} => {acc_this_time}\033[0m')
+            print(f'\033[1;32m{acc_best:.2f} => {acc_this_time:.2f}\033[0m')
             acc_best = acc_this_time
             torch.save(model, save_path)
 
