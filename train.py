@@ -1,23 +1,22 @@
 import os
 import torch
+from tqdm import tqdm
 import torch.nn as nn
 import torch.optim as optim
 from datetime import datetime
 from torch.utils.data import DataLoader
-from torchvision.transforms import ToTensor
-from tqdm import tqdm
+from torchvision.datasets import MNIST
+from utils.dataloader import Dataset
 from model.model_demo_2 import Net
 
-# 数据读入 I（如果你使用 MNIST）
-# from torchvision.datasets import MNIST
+# 数据读入（如果使用 MNIST）
 # train_dataset = MNIST(root='data/', train=True, transform=ToTensor(), download=True)
 # test_dataset = MNIST(root='data/', train=False, transform=ToTensor(), download=True)
 # train_data = DataLoader(train_dataset, batch_size=32, shuffle=True)
 # test_data = DataLoader(test_dataset, batch_size=32, shuffle=False)
 # label_num = 10
 
-# 数据读入 II
-from utils.dataloader import Dataset
+# 数据读入
 data_dir = 'dataset'
 data_name = 'NewDataset.mat'
 data_path = os.path.join(data_dir, data_name)
@@ -26,7 +25,6 @@ test_dataset = Dataset(data_path, train=False, transform=None)
 train_data = DataLoader(train_dataset, batch_size=32, shuffle=True)
 test_data = DataLoader(test_dataset, batch_size=32, shuffle=False)
 label_num = train_dataset.data_shape[0]
-
 
 # 保存位置处理
 save_dir = 'weight'
@@ -44,6 +42,7 @@ model = Net(label_num).to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
+
 class Accuracy:
     def __init__(self):
         self.correct = 0
@@ -57,11 +56,12 @@ class Accuracy:
     def compute(self):
         return 100.0 * self.correct / self.total
 
+
 # 定义准确率计算器
 accuracy = Accuracy()
 
 # 训练模型
-num_epochs = 50
+num_epochs = 100
 for epoch in range(num_epochs):
     running_loss = 0.0
     running_acc = 0.0
@@ -81,8 +81,8 @@ for epoch in range(num_epochs):
 
     print(f'Epoch {epoch+1}/{num_epochs}, Loss: {running_loss/len(train_data):.4f}, Acc: {accuracy.compute():.4f}')
 
-torch.save(model.state_dict(), save_path)
-torch.save(model.state_dict(), last_save_path)
+torch.save(model, save_path)
+torch.save(model, last_save_path)
 
 # 测试模型
 model.eval()

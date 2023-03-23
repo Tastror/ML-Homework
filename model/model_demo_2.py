@@ -11,6 +11,7 @@ class Net(nn.Module):
             nn.BatchNorm2d(16),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2),
+            nn.Dropout(0.2),
         )
 
         self.conv_features_2 = nn.Sequential(
@@ -18,6 +19,7 @@ class Net(nn.Module):
             nn.BatchNorm2d(32),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2),
+            nn.Dropout(0.2),
         )
 
         self.conv_features_3 = nn.Sequential(
@@ -25,10 +27,13 @@ class Net(nn.Module):
             nn.BatchNorm2d(32),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2),
+            nn.Dropout(0.25),
         )
 
         self.classifier = nn.Sequential(
-            nn.Linear(288, 128),
+            nn.Linear(288, 256),
+            nn.ReLU(inplace=True),
+            nn.Linear(256, 128),
             nn.ReLU(inplace=True),
             nn.Linear(128, label_num),
         )
