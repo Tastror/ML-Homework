@@ -12,18 +12,20 @@ from model.model_1 import Net
 # from torchvision.datasets import MNIST
 # train_dataset = MNIST(root='data/', train=True, transform=ToTensor(), download=True)
 # test_dataset = MNIST(root='data/', train=False, transform=ToTensor(), download=True)
+# train_data = DataLoader(train_dataset, batch_size=32, shuffle=True)
+# test_data = DataLoader(test_dataset, batch_size=32, shuffle=False)
+# label_num = 10
 
 # 数据读入 II
 from utils.dataloader import Dataset
 data_dir = 'dataset'
 data_name = 'NewDataset.mat'
 data_path = os.path.join(data_dir, data_name)
-train_dataset = Dataset(data_path, train=True)
-test_dataset = Dataset(data_path, train=False)
-
-# 数据转为 data
+train_dataset = Dataset(data_path, train=True, transform=None)
+test_dataset = Dataset(data_path, train=False, transform=None)
 train_data = DataLoader(train_dataset, batch_size=32, shuffle=True)
 test_data = DataLoader(test_dataset, batch_size=32, shuffle=False)
+label_num = train_dataset.data_shape[0]
 
 # 保存位置处理
 save_dir = 'weight'
@@ -37,10 +39,9 @@ if not os.path.exists(save_dir):
 # 定义模型、损失函数、优化器
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print("deivce use", device)
-model = Net().to(device)
+model = Net(label_num).to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
-
 
 class Accuracy:
     def __init__(self):
@@ -59,7 +60,7 @@ class Accuracy:
 accuracy = Accuracy()
 
 # 训练模型
-num_epochs = 4
+num_epochs = 100
 for epoch in range(num_epochs):
     running_loss = 0.0
     running_acc = 0.0
