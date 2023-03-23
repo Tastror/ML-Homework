@@ -20,7 +20,7 @@ from model.model_demo_2 import Net
 data_dir = 'dataset'
 data_name = 'NewDataset.mat'
 data_path = os.path.join(data_dir, data_name)
-train_dataset = Dataset(data_path, train=True, transform=None)
+train_dataset = Dataset(data_path, train=True, transform=None, augmentation=True)
 test_dataset = Dataset(data_path, train=False, transform=None)
 train_data = DataLoader(train_dataset, batch_size=32, shuffle=True)
 test_data = DataLoader(test_dataset, batch_size=32, shuffle=False)
@@ -61,7 +61,7 @@ class Accuracy:
 accuracy = Accuracy()
 
 # 训练模型
-num_epochs = 100
+num_epochs = 200
 for epoch in range(num_epochs):
     running_loss = 0.0
     running_acc = 0.0
