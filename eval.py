@@ -6,8 +6,8 @@ from torch.utils.data import DataLoader
 parser = argparse.ArgumentParser(description='evaluate the model')
 parser.add_argument(
     'model_name', metavar='model', type=str, nargs='?',
-    default="pt-torch-last.pt",
-    help='model name, save dir is weight/ (default: pt-torch-last.pt)'
+    default="pt-torch-best.pt",
+    help='model name, save dir is weight/ (default: pt-torch-best.pt)'
 )
 parser.add_argument(
     '--nred', action='store_true',

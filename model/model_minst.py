@@ -6,6 +6,8 @@ import torch.nn as nn
 class Net(nn.Module):
     def __init__(self, label_num: int = 10):
         super(Net, self).__init__()
+        self.lr = 0.001
+        self.weight_decay = 0
         self.conv1 = nn.Conv2d(1, 32, kernel_size=3, stride=1, padding=1)
         self.conv2 = nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1)
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2)

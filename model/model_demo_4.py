@@ -5,6 +5,10 @@ import torch.nn as nn
 class Net(nn.Module):
     def __init__(self, label_num: int = 200):
         super(Net, self).__init__()
+
+        self.lr = 0.001
+        self.weight_decay = 0.001
+
         self.conv_features = nn.Sequential(
             nn.Conv2d(1, 16, kernel_size=3, padding=1),
             nn.Dropout(0.2),

@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 parser = argparse.ArgumentParser(description='use the model to inference')
 parser.add_argument(
     'model_name', metavar='model', type=str, nargs='?',
-    default="pt-torch-last.pt",
-    help='model name, save dir is weight/ (default: pt-torch-last.pt)'
+    default="pt-torch-best.pt",
+    help='model name, save dir is weight/ (default: pt-torch-best.pt)'
 )
 args = parser.parse_args()
 print('use weight/', args.model_name, sep="")

@@ -6,8 +6,8 @@ import argparse
 parser = argparse.ArgumentParser(description='show the model')
 parser.add_argument(
     'model_name', metavar='model', type=str, nargs='?',
-    default="pt-torch-last.pt",
-    help='model name, save dir is weight/, default is pt-torch-last.pt'
+    default="pt-torch-best.pt",
+    help='model name, save dir is weight/, default is pt-torch-best.pt'
 )
 args = parser.parse_args()
 print('show weight/', args.model_name, sep="")

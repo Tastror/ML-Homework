@@ -49,10 +49,12 @@ label_num = train_dataset.data_shape[0]
 
 # 保存位置处理
 save_dir = 'weight'
-save_name = "pt-torch-" + datetime.now().strftime("%Y%m%d-%H%M%S") + ".pt"
+best_with_date_save_name = "pt-torch-" + datetime.now().strftime("%Y%m%d-%H%M%S") + ".pt"
 last_save_name = "pt-torch-last.pt"
-save_path = os.path.join(save_dir, save_name)
+best_save_name = "pt-torch-best.pt"
+best_with_date_save_path = os.path.join(save_dir, best_with_date_save_name)
 last_save_path = os.path.join(save_dir, last_save_name)
+best_save_path = os.path.join(save_dir, best_save_name)
 if not os.path.exists(save_dir):
     os.makedirs(save_dir)
 
@@ -61,7 +63,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print("deivce use", device)
 model = Net(label_num).to(device)
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=0.001)
+optimizer = optim.Adam(model.parameters(), lr=model.lr, weight_decay=model.weight_decay)
 
 
 class Accuracy:
@@ -145,7 +147,8 @@ for epoch in range(num_epochs):
         if accuracy.compute() > acc_best:
             print(f'\033[1;32m{acc_best:.2f} => {accuracy.compute():.2f}\033[0m')
             acc_best = accuracy.compute()
-            torch.save(model, save_path)
+            torch.save(model, best_with_date_save_path)
+            torch.save(model, best_save_path)
         accuracy.clear()
 
     torch.save(model, last_save_path)
