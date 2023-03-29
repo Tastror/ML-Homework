@@ -8,8 +8,8 @@ work 1: handwriting detect
 python train.py [--nred] [--naug]
 ```
 
-`--nred`: no redundant, recommed to open  
-`--naug`: no augmentation, do not recommed to open  
+`--nred`: no redundant, recommend to use  
+`--naug`: no augmentation, not recommend to use  
 result will save in `weight/xxx.pt`
 
 ## Evaluate
