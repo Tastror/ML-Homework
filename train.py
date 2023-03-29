@@ -49,9 +49,14 @@ label_num = train_dataset.data_shape[0]
 
 # 保存位置处理
 save_dir = 'weight'
-best_with_date_save_name = "pt-torch-" + datetime.now().strftime("%Y%m%d-%H%M%S") + ".pt"
-last_save_name = "pt-torch-last.pt"
-best_save_name = "pt-torch-best.pt"
+if args.nred:
+    best_with_date_save_name = "pt-torch-nred-" + datetime.now().strftime("%Y%m%d-%H%M%S") + ".pt"
+    last_save_name = "pt-torch-nred-last.pt"
+    best_save_name = "pt-torch-nred-best.pt"
+else:
+    best_with_date_save_name = "pt-torch-" + datetime.now().strftime("%Y%m%d-%H%M%S") + ".pt"
+    last_save_name = "pt-torch-last.pt"
+    best_save_name = "pt-torch-best.pt"
 best_with_date_save_path = os.path.join(save_dir, best_with_date_save_name)
 last_save_path = os.path.join(save_dir, last_save_name)
 best_save_path = os.path.join(save_dir, best_save_name)

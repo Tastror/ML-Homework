@@ -6,14 +6,16 @@ from torch.utils.data import DataLoader
 parser = argparse.ArgumentParser(description='evaluate the model')
 parser.add_argument(
     'model_name', metavar='model', type=str, nargs='?',
-    default="pt-torch-best.pt",
-    help='model name, save dir is weight/ (default: pt-torch-best.pt)'
+    default="--default",
+    help='model name, save dir is weight/ (default: pt-torch(-nred)-best.pt)'
 )
 parser.add_argument(
     '--nred', action='store_true',
     help='use utils.dataloader_no_redundant (default: utils.dataloader)'
 )
 args = parser.parse_args()
+if args.model_name == "--default":
+    args.model_name = "pt-torch-nred-best.pt" if args.nred else "pt-torch-best.pt"
 print('use weight/', args.model_name, sep="")
 print('use Dataset in utils.dataloader{}'.format("_no_redundant" if args.nred else ""))
 if args.nred:
