@@ -6,7 +6,7 @@ class Net(nn.Module):
     def __init__(self, label_num: int = 200):
         super(Net, self).__init__()
 
-        self.lr = 0.001
+        self.lr = 0.0005
         self.weight_decay = 0.001
 
         self.conv_features = nn.Sequential(
