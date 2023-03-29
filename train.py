@@ -1,13 +1,25 @@
 import os
 import torch
+import argparse
 from tqdm import tqdm
 import torch.nn as nn
 import torch.optim as optim
 from datetime import datetime
 from torch.utils.data import DataLoader
 from torchvision.datasets import MNIST
-from utils.dataloader import Dataset
-from model.model_demo_3 import Net
+from model.model_demo_4 import Net
+
+parser = argparse.ArgumentParser(description='train the model')
+parser.add_argument(
+    '--nred', action='store_true',
+    help='use utils.dataloader_no_redundant (default: utils.dataloader)'
+)
+args = parser.parse_args()
+print('use Dataset in utils.dataloader{}'.format("_no_redundant" if args.nred else ""))
+if args.nred:
+    from utils.dataloader_no_redundant import Dataset
+else:
+    from utils.dataloader import Dataset
 
 # 数据读入（如果使用 MNIST）
 # train_dataset = MNIST(root='data/', train=True, transform=ToTensor(), download=True)
@@ -21,8 +33,10 @@ data_dir = 'dataset'
 data_name = 'NewDataset.mat'
 data_path = os.path.join(data_dir, data_name)
 train_dataset = Dataset(data_path, train=True, transform=None, augmentation=True)
+train_2_dataset = Dataset(data_path, train=True, transform=None)
 test_dataset = Dataset(data_path, train=False, transform=None)
 train_data = DataLoader(train_dataset, batch_size=32, shuffle=True)
+train_2_data = DataLoader(train_2_dataset, batch_size=32, shuffle=True)
 test_data = DataLoader(test_dataset, batch_size=32, shuffle=False)
 label_num = train_dataset.data_shape[0]
 
@@ -89,9 +103,22 @@ for epoch in range(num_epochs):
         f'\033[33mEpoch {epoch + 1}/{num_epochs}'
         f', Loss: {running_loss / len(train_data):.4f}'
         # this is not true in model.train()
-        f', (model.train) Accuracy: {accuracy.compute():.4f}\033[0m'
+        f', (model.train accuracy: {accuracy.compute():.4f})\033[0m'
     )
     accuracy.clear()
+
+    # show accuracy
+    model.eval()
+    with torch.no_grad():
+        correct = 0
+        total = 0
+        for images, labels in train_2_data:
+            images = images.to(device)
+            labels = labels.to(device)
+            outputs = model(images)
+            accuracy.update(outputs, labels)
+        print(f'\033[33mTrain Accuracy: {accuracy.compute():.4f}\033[0m')
+        accuracy.clear()
 
     # save best
     model.eval()

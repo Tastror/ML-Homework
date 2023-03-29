@@ -3,16 +3,25 @@ import torch
 import argparse
 from tqdm import tqdm
 from torch.utils.data import DataLoader
-from utils.dataloader import Dataset
 
-parser = argparse.ArgumentParser(description='Process some integers.')
+parser = argparse.ArgumentParser(description='evaluate the model')
 parser.add_argument(
     'model_name', metavar='model', type=str, nargs='?',
     default="pt-torch-last.pt",
-    help='model name, save dir is weight/, default is pt-torch-last.pt'
+    help='model name, save dir is weight/ (default: pt-torch-last.pt)'
+)
+parser.add_argument(
+    '--nred', action='store_true',
+    help='use utils.dataloader_no_redundant (default: utils.dataloader)'
 )
 args = parser.parse_args()
 print('use weight/', args.model_name, sep="")
+print('use Dataset in utils.dataloader{}'.format("_no_redundant" if args.nred else ""))
+if args.nred:
+    from utils.dataloader_no_redundant import Dataset
+else:
+    from utils.dataloader import Dataset
+
 
 data_dir = 'dataset'
 data_name = 'NewDataset.mat'
