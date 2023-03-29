@@ -6,9 +6,9 @@ class Net(nn.Module):
     def __init__(self, label_num: int = 200):
         super(Net, self).__init__()
 
-        # Adam
+        # AdamW
         self.lr = 0.0002
-        self.weight_decay = 0.001
+        self.weight_decay = 0.01
 
         self.conv_features = nn.Sequential(
             nn.Conv2d(1, 16, kernel_size=3, padding=1),
@@ -42,12 +42,12 @@ class Net(nn.Module):
             nn.Conv2d(64, 64, kernel_size=3, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(inplace=True),
-            nn.Dropout(0.2),
+            nn.Dropout(0.3),
 
             nn.Conv2d(64, 64, kernel_size=3, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(inplace=True),
-            nn.Dropout(0.2),
+            nn.Dropout(0.3),
 
             nn.MaxPool2d(kernel_size=2),
         )
