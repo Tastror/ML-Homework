@@ -30,6 +30,8 @@ class Dataset(Dataset):
         self.__no_redundant_length = self.__no_redundant_data_shape[0] * self.__no_redundant_data_shape[1]
 
         k = self.__no_redundant_data_shape[0]
+        while k in self.__del_dict.keys():
+            k += 1
         for i in self.__del_dict.keys():
             if i >= self.__no_redundant_data_shape[0]:
                 self.__trans_dict[i] = i
