@@ -7,12 +7,12 @@ class Net(nn.Module):
         super(Net, self).__init__()
         self.conv_features = nn.Sequential(
             nn.Conv2d(1, 16, kernel_size=3, padding=1),
-            nn.Dropout(0.2),
+            nn.Dropout(0.25),
             nn.BatchNorm2d(16),
             nn.ReLU(inplace=True),
 
             nn.Conv2d(16, 32, kernel_size=3, padding=1),
-            nn.Dropout(0.2),
+            nn.Dropout(0.25),
             nn.BatchNorm2d(32),
             nn.ReLU(inplace=True),
 
@@ -21,12 +21,12 @@ class Net(nn.Module):
             # nn.Upsample(scale_factor=2, mode='bilinear'),
 
             nn.Conv2d(32, 64, kernel_size=3, padding=1),
-            nn.Dropout(0.2),
+            nn.Dropout(0.25),
             nn.BatchNorm2d(64),
             nn.ReLU(inplace=True),
 
             nn.Conv2d(64, 64, kernel_size=3, padding=1),
-            nn.Dropout(0.2),
+            nn.Dropout(0.25),
             nn.BatchNorm2d(64),
             nn.ReLU(inplace=True),
 

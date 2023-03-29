@@ -3,7 +3,7 @@ import torch
 import argparse
 
 
-parser = argparse.ArgumentParser(description='Process some integers.')
+parser = argparse.ArgumentParser(description='show the model')
 parser.add_argument(
     'model_name', metavar='model', type=str, nargs='?',
     default="pt-torch-last.pt",
