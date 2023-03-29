@@ -68,7 +68,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print("deivce use", device)
 model = Net(label_num).to(device)
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=model.lr, weight_decay=model.weight_decay)
+optimizer = optim.AdamW(model.parameters(), lr=model.lr, weight_decay=model.weight_decay)
 
 
 class Accuracy:

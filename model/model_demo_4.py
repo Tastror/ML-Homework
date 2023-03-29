@@ -7,7 +7,7 @@ class Net(nn.Module):
         super(Net, self).__init__()
 
         self.lr = 0.0002
-        self.weight_decay = 0.001
+        self.weight_decay = 0.01
 
         self.conv_features = nn.Sequential(
             nn.Conv2d(1, 16, kernel_size=3, padding=1),
