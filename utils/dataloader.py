@@ -16,7 +16,7 @@ class Dataset(Dataset):
         self.__length = self.__data_shape[0] * self.__data_shape[1]
         self.__augmentation = augmentation
         if self.__augmentation:
-            self.__length = self.__length * 9  # 9 为数据增强
+            self.__length = self.__length * 7  # 7 为数据增强
         self.__transform = transform
 
         print('length of dataset is', self.__length, end=", ")
@@ -46,8 +46,8 @@ class Dataset(Dataset):
         # 增强类型
         augmentation_type = 0
         if self.__augmentation:
-            augmentation_type = index % 9
-            index //= 9
+            augmentation_type = index % 7
+            index //= 7
 
         label = index // self.__data_shape[1]
         index = index % self.__data_shape[1]
@@ -60,23 +60,29 @@ class Dataset(Dataset):
             if augmentation_type == 0:
                 pass
             elif augmentation_type == 1:
-                image = Image.fromarray(image)
-                image = image.resize((24, 24), resample=Image.BILINEAR)
-                image = np.array(image)
-                image = np.pad(image, (2, 2), 'constant', constant_values=0)
-                if index % 2 == 0:
-                    image = np.roll(image, 5, axis=0)  # 缩放并平移
+                # 缩放并平移
+                if index % 4 == 0:
+                    image = np.roll(image, 3, axis=0)
+                elif index % 4 == 1:
+                    image = np.roll(image, -3, axis=0)
+                elif index % 4 == 2:
+                    image = np.roll(image, 3, axis=1)
                 else:
-                    image = np.roll(image, -5, axis=0)  # 缩放并平移
+                    image = np.roll(image, -3, axis=1)
             elif augmentation_type == 2:
-                image = Image.fromarray(image)
-                image = image.resize((24, 24), resample=Image.BILINEAR)
-                image = np.array(image)
-                image = np.pad(image, (2, 2), 'constant', constant_values=0)
-                if index % 2 == 0:
-                    image = np.roll(image, 5, axis=1)  # 缩放并平移
+                # 缩放并平移
+                if index % 4 == 0:
+                    image = np.roll(image, -3, axis=0)
+                    image = np.roll(image, -3, axis=1)
+                elif index % 4 == 1:
+                    image = np.roll(image, 3, axis=0)
+                    image = np.roll(image, 3, axis=1)
+                elif index % 4 == 2:
+                    image = np.roll(image, 3, axis=0)
+                    image = np.roll(image, -3, axis=1)
                 else:
-                    image = np.roll(image, -5, axis=1)  # 缩放并平移
+                    image = np.roll(image, -3, axis=0)
+                    image = np.roll(image, 3, axis=1)
             elif augmentation_type == 3:
                 # 旋转操作
                 image = Image.fromarray(image)
@@ -88,22 +94,12 @@ class Dataset(Dataset):
                 image = image.rotate(-10)
                 image = np.array(image)
             elif augmentation_type == 5:
-                # 旋转操作
-                image = Image.fromarray(image)
-                image = image.rotate(20)
-                image = np.array(image)
-            elif augmentation_type == 6:
-                # 旋转操作
-                image = Image.fromarray(image)
-                image = image.rotate(-20)
-                image = np.array(image)
-            elif augmentation_type == 7:
                 # 缩放操作
                 image = Image.fromarray(image)
                 image = image.resize((24, 24), resample=Image.BILINEAR)
                 image = np.array(image)
                 image = np.pad(image, (2, 2), 'constant', constant_values=0)
-            elif augmentation_type == 8:
+            elif augmentation_type == 6:
                 # 缩放操作
                 image = Image.fromarray(image)
                 image = image.resize((32, 32), resample=Image.BILINEAR)

@@ -6,7 +6,7 @@ import torch.nn as nn
 import torch.optim as optim
 from datetime import datetime
 from torch.utils.data import DataLoader
-from model.model_demo_4 import Net
+from model.model_demo_3 import Net
 
 parser = argparse.ArgumentParser(description='train the model')
 parser.add_argument(
