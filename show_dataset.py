@@ -12,9 +12,14 @@ label_num = train_dataset.data_shape[0]
 index_num = train_dataset.data_shape[1]
 
 while True:
-    i = int(input()) - 1
+    print(f"\033[34minput label num (0 ~ {train_dataset.data_shape[0] - 1}):\033[33m ", end="")
+    i = int(input())
+    print(f"\033[34minput number of pictures (1 ~ {train_dataset.data_shape[1] - 1}):\033[33m ", end="")
     len = int(input())
+    print("\033[0m", end="")
     index = i * index_num
     for j in range(index, index + len):
+        print(f"showing index[{j - index}] in label = {i}")
         img, lab = train_dataset[j]
         Image.fromarray(img[0] * 255).show()
+    print("done")

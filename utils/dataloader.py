@@ -1,6 +1,6 @@
 import numpy as np
-from PIL import Image
 import scipy.io as scio
+from utils.augmentation_7 import augment, augment_type_num
 from torch.utils.data.dataset import Dataset
 
 
@@ -16,7 +16,7 @@ class Dataset(Dataset):
         self.__length = self.__data_shape[0] * self.__data_shape[1]
         self.__augmentation = augmentation
         if self.__augmentation:
-            self.__length = self.__length * 7  # 7 为数据增强
+            self.__length = self.__length * augment_type_num  # augment_type_num 为数据增强
         self.__transform = transform
 
         print('length of dataset is', self.__length, end=", ")
@@ -46,8 +46,8 @@ class Dataset(Dataset):
         # 增强类型
         augmentation_type = 0
         if self.__augmentation:
-            augmentation_type = index % 7
-            index //= 7
+            augmentation_type = index % augment_type_num
+            index //= augment_type_num
 
         label = index // self.__data_shape[1]
         index = index % self.__data_shape[1]
@@ -57,54 +57,7 @@ class Dataset(Dataset):
         image = 255 - np.array(image)
 
         if self.__augmentation:
-            if augmentation_type == 0:
-                pass
-            elif augmentation_type == 1:
-                # 缩放并平移
-                if index % 4 == 0:
-                    image = np.roll(image, 3, axis=0)
-                elif index % 4 == 1:
-                    image = np.roll(image, -3, axis=0)
-                elif index % 4 == 2:
-                    image = np.roll(image, 3, axis=1)
-                else:
-                    image = np.roll(image, -3, axis=1)
-            elif augmentation_type == 2:
-                # 缩放并平移
-                if index % 4 == 0:
-                    image = np.roll(image, -3, axis=0)
-                    image = np.roll(image, -3, axis=1)
-                elif index % 4 == 1:
-                    image = np.roll(image, 3, axis=0)
-                    image = np.roll(image, 3, axis=1)
-                elif index % 4 == 2:
-                    image = np.roll(image, 3, axis=0)
-                    image = np.roll(image, -3, axis=1)
-                else:
-                    image = np.roll(image, -3, axis=0)
-                    image = np.roll(image, 3, axis=1)
-            elif augmentation_type == 3:
-                # 旋转操作
-                image = Image.fromarray(image)
-                image = image.rotate(10)
-                image = np.array(image)
-            elif augmentation_type == 4:
-                # 旋转操作
-                image = Image.fromarray(image)
-                image = image.rotate(-10)
-                image = np.array(image)
-            elif augmentation_type == 5:
-                # 缩放操作
-                image = Image.fromarray(image)
-                image = image.resize((24, 24), resample=Image.BILINEAR)
-                image = np.array(image)
-                image = np.pad(image, (2, 2), 'constant', constant_values=0)
-            elif augmentation_type == 6:
-                # 缩放操作
-                image = Image.fromarray(image)
-                image = image.resize((32, 32), resample=Image.BILINEAR)
-                image = np.array(image)
-                image = image[2:30, 2:30]
+            image = augment(image, augmentation_type, index)
 
         # 归一预处理
         image = np.array(image, dtype=np.float32) / 255
