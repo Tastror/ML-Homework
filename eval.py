@@ -1,7 +1,6 @@
 import os
 import torch
 import argparse
-from tqdm import tqdm
 from torch.utils.data import DataLoader
 
 parser = argparse.ArgumentParser(description='evaluate the model')

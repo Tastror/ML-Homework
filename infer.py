@@ -7,11 +7,11 @@ from PIL import Image
 import matplotlib.pyplot as plt
 
 
-parser = argparse.ArgumentParser(description='Process some integers.')
+parser = argparse.ArgumentParser(description='use the model to inference')
 parser.add_argument(
     'model_name', metavar='model', type=str, nargs='?',
     default="pt-torch-last.pt",
-    help='model name, save dir is weight/, default is pt-torch-last.pt'
+    help='model name, save dir is weight/ (default: pt-torch-last.pt)'
 )
 args = parser.parse_args()
 print('use weight/', args.model_name, sep="")

@@ -11,66 +11,76 @@ class Dataset(Dataset):
     def __init__(self, path, train, transform=None, augmentation=False):
         super(Dataset, self).__init__()
 
-        self.data = scio.loadmat(path)
-        self.data = self.data['train'] if train else self.data['test']
-        self.shape = np.shape(self.data)
-        self.data_shape = self.shape[:2]
-        self.input_shape = self.shape[2:]
-        self.length = self.data_shape[0] * self.data_shape[1]
+        self.__data = scio.loadmat(path)
+        self.__data = self.__data['train'] if train else self.__data['test']
+        self.__shape = np.shape(self.__data)
+        self.__data_shape = self.__shape[:2]
+        self.__input_shape = self.__shape[2:]
+        self.__length = self.__data_shape[0] * self.__data_shape[1]
 
         # 去除冗余
-        self.del_dict = {}  # 记录删除的下标和相似下标的关系，键值对：删除下标 - 相似下标
-        self.trans_dict = {}  # 将删除的下标映射到 >= length 的值，键值对：删除下标 - 映射的可用下标
+        self.__del_dict = {}  # 记录删除的下标和相似下标的关系，键值对：删除下标 - 相似下标
+        self.__trans_dict = {}  # 将删除的下标映射到 >= length 的值，键值对：删除下标 - 映射的可用下标
         for i in redundant:
             k = i[0]
             for s in i[1:]:
-                self.del_dict[s] = k
-        print('delete length is', len(self.del_dict))
-        self.length -= len(self.del_dict)
-        k = self.length
-        for i in self.del_dict.keys():
-            self.trans_dict[i] = k
+                self.__del_dict[s] = k
+        print('delete length is', len(self.__del_dict))
+        self.__no_redundant_data_shape = (self.__data_shape[0] - len(self.__del_dict), self.__data_shape[1])
+        self.__no_redundant_length = self.__no_redundant_data_shape[0] * self.__no_redundant_data_shape[1]
+        k = self.__no_redundant_length
+        for i in self.__del_dict.keys():
+            self.__trans_dict[i] = k
             k += 1
 
-        self.augmentation = augmentation
-        if self.augmentation:
-            self.length = self.length * 7  # 7 为数据增强
-        self.transform = transform
+        self.__augmentation = augmentation
+        if self.__augmentation:
+            self.__length = self.__length * 7  # 7 为数据增强
+            self.__no_redundant_length = self.__no_redundant_length * 7  # 7 为数据增强
+        self.__transform = transform
 
-        print('length of dataset is', self.length, end=", ")
-        print('shape of dataset is', self.data_shape, end=", ")
-        print('shape of image is', self.input_shape)
+        print('length of dataset is', self.__no_redundant_length, end=", ")
+        print('shape of dataset is', self.__no_redundant_data_shape, end=", ")
+        print('shape of image is', self.__input_shape)
+
+    @property
+    def data_shape(self):
+        return self.__no_redundant_data_shape
+
+    @property
+    def input_shape(self):
+        return self.__input_shape
 
     def __len__(self):
-        return self.length
+        return self.__no_redundant_length
 
     def __getitem__(self, index):
 
-        if index >= self.length or index < -self.length:
+        if index >= self.__no_redundant_length or index < -self.__no_redundant_length:
             raise IndexError(
-                f"Dataset index out of boundary: {index} in 0 ~ {self.length - 1}"
+                f"Dataset index out of boundary: {index} in 0 ~ {self.__no_redundant_length - 1}"
             )
         if index < 0:
-            index = self.length + index
-
-        # 冗余映射
-        if index in self.trans_dict.keys():
-            index = self.trans_dict[index]
+            index = self.__no_redundant_length + index
 
         # 增强类型
         augmentation_type = 0
-        if self.augmentation:
+        if self.__augmentation:
             augmentation_type = index % 7
             index //= 7
 
-        label = index // self.data_shape[1]
-        index = index % self.data_shape[1]
-        image = self.data[label][index]
+        label = index // self.__data_shape[1]
+        index = index % self.__data_shape[1]
+        image = self.__data[label][index]
+
+        # 冗余映射
+        if index in self.__trans_dict.keys():
+            index = self.__trans_dict[index]
 
         # 反色预处理
         image = 255 - np.array(image)
 
-        if self.augmentation:
+        if self.__augmentation:
             if augmentation_type == 0:
                 pass
             elif augmentation_type == 1:
@@ -117,7 +127,7 @@ class Dataset(Dataset):
         image = np.expand_dims(image, axis=2)
         image = np.transpose(image, (2, 0, 1))
 
-        if self.transform:
-            image = self.transform(image)
+        if self.__transform:
+            image = self.__transform(image)
 
         return image, label

@@ -8,47 +8,55 @@ class Dataset(Dataset):
     def __init__(self, path, train, transform=None, augmentation=False):
         super(Dataset, self).__init__()
 
-        self.data = scio.loadmat(path)
-        self.data = self.data['train'] if train else self.data['test']
-        self.shape = np.shape(self.data)
-        self.data_shape = self.shape[:2]
-        self.input_shape = self.shape[2:]
-        self.length = self.data_shape[0] * self.data_shape[1]
-        self.augmentation = augmentation
-        if self.augmentation:
-            self.length = self.length * 7  # 7 为数据增强
-        self.transform = transform
+        self.__data = scio.loadmat(path)
+        self.__data = self.__data['train'] if train else self.__data['test']
+        self.__shape = np.shape(self.__data)
+        self.__data_shape = self.__shape[:2]
+        self.__input_shape = self.__shape[2:]
+        self.__length = self.__data_shape[0] * self.__data_shape[1]
+        self.__augmentation = augmentation
+        if self.__augmentation:
+            self.__length = self.__length * 7  # 7 为数据增强
+        self.__transform = transform
 
-        print('length of dataset is', self.length, end=", ")
-        print('shape of dataset is', self.data_shape, end=", ")
-        print('shape of image is', self.input_shape)
+        print('length of dataset is', self.__length, end=", ")
+        print('shape of dataset is', self.__data_shape, end=", ")
+        print('shape of image is', self.__input_shape)
+
+    @property
+    def data_shape(self):
+        return self.__data_shape
+
+    @property
+    def input_shape(self):
+        return self.__input_shape
 
     def __len__(self):
-        return self.length
+        return self.__length
 
     def __getitem__(self, index):
 
-        if index >= self.length or index < -self.length:
+        if index >= self.__length or index < -self.__length:
             raise IndexError(
-                f"Dataset index out of boundary: {index} in 0 ~ {self.length - 1}"
+                f"Dataset index out of boundary: {index} in 0 ~ {self.__length - 1}"
             )
         if index < 0:
-            index = self.length + index
+            index = self.__length + index
 
         # 增强类型
         augmentation_type = 0
-        if self.augmentation:
+        if self.__augmentation:
             augmentation_type = index % 7
             index //= 7
 
-        label = index // self.data_shape[1]
-        index = index % self.data_shape[1]
-        image = self.data[label][index]
+        label = index // self.__data_shape[1]
+        index = index % self.__data_shape[1]
+        image = self.__data[label][index]
 
         # 反色预处理
         image = 255 - np.array(image)
 
-        if self.augmentation:
+        if self.__augmentation:
             if augmentation_type == 0:
                 pass
             elif augmentation_type == 1:
@@ -95,7 +103,7 @@ class Dataset(Dataset):
         image = np.expand_dims(image, axis=2)
         image = np.transpose(image, (2, 0, 1))
 
-        if self.transform:
-            image = self.transform(image)
+        if self.__transform:
+            image = self.__transform(image)
 
         return image, label

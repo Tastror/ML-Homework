@@ -6,13 +6,16 @@ import torch.nn as nn
 import torch.optim as optim
 from datetime import datetime
 from torch.utils.data import DataLoader
-from torchvision.datasets import MNIST
 from model.model_demo_4 import Net
 
 parser = argparse.ArgumentParser(description='train the model')
 parser.add_argument(
     '--nred', action='store_true',
     help='use utils.dataloader_no_redundant (default: utils.dataloader)'
+)
+parser.add_argument(
+    '--naug', action='store_true',
+    help='augmentation=False (default: augmentation=True)'
 )
 args = parser.parse_args()
 print('use Dataset in utils.dataloader{}'.format("_no_redundant" if args.nred else ""))
@@ -22,6 +25,7 @@ else:
     from utils.dataloader import Dataset
 
 # 数据读入（如果使用 MNIST）
+# from torchvision.datasets import MNIST
 # train_dataset = MNIST(root='data/', train=True, transform=ToTensor(), download=True)
 # test_dataset = MNIST(root='data/', train=False, transform=ToTensor(), download=True)
 # train_data = DataLoader(train_dataset, batch_size=32, shuffle=True)
@@ -32,7 +36,10 @@ else:
 data_dir = 'dataset'
 data_name = 'NewDataset.mat'
 data_path = os.path.join(data_dir, data_name)
-train_dataset = Dataset(data_path, train=True, transform=None, augmentation=True)
+if args.naug:
+    train_dataset = Dataset(data_path, train=True, transform=None, augmentation=False)
+else:
+    train_dataset = Dataset(data_path, train=True, transform=None, augmentation=True)
 train_2_dataset = Dataset(data_path, train=True, transform=None)
 test_dataset = Dataset(data_path, train=False, transform=None)
 train_data = DataLoader(train_dataset, batch_size=32, shuffle=True)
