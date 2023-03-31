@@ -2,6 +2,8 @@
 
 work 1: handwriting detect
 
+**More in [readme.ipynb](./readme.ipynb)**
+
 ## Train
 
 ```shell
