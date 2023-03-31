@@ -2,7 +2,8 @@
 
 work 1: handwriting detect
 
-**More in [readme.ipynb](./readme.ipynb)**
+**More in [readme.ipynb](./readme.ipynb)**  
+**Dataset characters' name in dataset/NewDataset.txt**
 
 ## Train
 
