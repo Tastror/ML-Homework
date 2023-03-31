@@ -2,8 +2,8 @@
 
 work 1: handwriting detect
 
-**More in [readme.ipynb](./readme.ipynb)**  
-**Dataset characters' name in [dataset/NewDataset.txt](./dataset/NewDataset.txt)**
+**More in [readme.ipynb (Chinese)](./readme.ipynb)**  
+**Dataset characters' name in [dataset/NewDataset.txt (Chinese)](./dataset/NewDataset.txt)**
 
 ## Train
 
@@ -35,3 +35,5 @@ python infer.py pt-torch-123456.pt
 
 directory name is `weight/`  
 default use `pt-torch-best.pt`
+
+![inference gif](https://s2.loli.net/2023/03/31/FwOg6JqhIX4aZuB.gif)
