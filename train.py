@@ -36,16 +36,14 @@ else:
 data_dir = 'dataset'
 data_name = 'NewDataset.mat'
 data_path = os.path.join(data_dir, data_name)
-if args.naug:
-    train_dataset = Dataset(data_path, train=True, transform=None, augmentation=False)
-else:
-    train_dataset = Dataset(data_path, train=True, transform=None, augmentation=True)
+train_dataset = Dataset(data_path, train=True, transform=None, augmentation=not args.naug)
 train_2_dataset = Dataset(data_path, train=True, transform=None)
 test_dataset = Dataset(data_path, train=False, transform=None)
 train_data = DataLoader(train_dataset, batch_size=32, shuffle=True)
 train_2_data = DataLoader(train_2_dataset, batch_size=32, shuffle=True)
 test_data = DataLoader(test_dataset, batch_size=32, shuffle=False)
 label_num = train_dataset.data_shape[0]
+print(train_dataset.shape)
 
 # 保存位置处理
 save_dir = 'weight'
