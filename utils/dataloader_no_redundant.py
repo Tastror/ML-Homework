@@ -18,7 +18,7 @@ class Dataset(Dataset):
     ):
         """
         Args:
-            picture_dim_type (str): "svm" image.shape = (inputshape[0] * inputshape[1],), "torch" image.shape = (1, inputshape[0], inputshape[1])
+            picture_dim_type (str): "svm" image.shape = (imageshape[0] * imageshape[1],), "torch" image.shape = (1, imageshape[0], imageshape[1])
         """
         super(Dataset, self).__init__()
 

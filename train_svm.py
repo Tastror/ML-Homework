@@ -7,6 +7,7 @@ import numpy as np
 from sklearn.svm import SVC
 from datetime import datetime
 from torch.utils.data import DataLoader
+from sklearn.feature_selection import VarianceThreshold
 from sklearn.metrics import accuracy_score, classification_report
 
 
