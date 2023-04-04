@@ -5,9 +5,10 @@ import os
 import argparse
 import numpy as np
 from sklearn.svm import SVC
-from datetime import datetime
-from torch.utils.data import DataLoader
+from skimage.feature import hog
+from sklearn.feature_extraction import image
 from sklearn.feature_selection import VarianceThreshold
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
 
 
@@ -21,7 +22,11 @@ parser.add_argument(
     help='augmentation=False (default: augmentation=True)'
 )
 args = parser.parse_args()
-print('use Dataset in utils.dataloader{}'.format("_no_redundant" if args.nred else ""))
+print(
+    'use Dataset in utils.dataloader{}'.format(
+        "_no_redundant" if args.nred else ""
+    )
+)
 if args.nred:
     from utils.dataloader_no_redundant import Dataset
 else:
@@ -30,48 +35,56 @@ else:
 data_dir = 'dataset'
 data_name = 'NewDataset.mat'
 data_path = os.path.join(data_dir, data_name)
-train_dataset = Dataset(data_path, train=True, picture_dim_type="svm", augmentation=not args.naug)
-val_dataset = Dataset(data_path, train=False, picture_dim_type="svm")
-print(train_dataset.shape)
-
-num_workers = 0
-shuffle = False
-train_gen = DataLoader(
-    train_dataset, shuffle=shuffle, batch_size=len(train_dataset), num_workers=num_workers,
-    pin_memory=True, drop_last=True, sampler=None
+train_dataset = Dataset(
+    data_path, train=True,
+    picture_dim_type="HWC", augmentation=not args.naug
 )
-val_gen = DataLoader(
-    val_dataset, shuffle=shuffle, batch_size=len(val_dataset), num_workers=num_workers,
-    pin_memory=True, drop_last=True, sampler=None
-)
+val_dataset = Dataset(data_path, train=False, picture_dim_type="HWC")
+
+# 获取图片和标签
+X_train = train_dataset.data
+y_train = train_dataset.targets
+X_test = val_dataset.data
+y_test = val_dataset.targets
 
 
-def fit_one_epoch(train_gen, val_gen):
-    print('Start Train')
-
-    model = SVC(kernel='linear', C=1.0, gamma='scale')
-
-    for iteration, batch in enumerate(train_gen):
-        if iteration >= 1:
-            break
-
-        train_images, train_label = batch[0], batch[1]
-        print(np.shape(train_images), np.shape(train_label))
-        model.fit(train_images, train_label)
-
-    print('Start test')
-
-    for iteration, batch in enumerate(val_gen):
-        if iteration >= 1:
-            break
-
-        val_images, val_label = batch[0], batch[1]
-        val_pred  = model.predict(val_images)
-
-        accuracy = accuracy_score(val_label, val_pred)
-        report = classification_report(val_label, val_pred)
-        print("Accuracy:", accuracy)
-        print("Classification report:", report)
+# 将图像转换为特征向量
+def change(image_list):
+    res_list = []
+    for i in image_list:
+        patches_1 = image.extract_patches_2d(
+            i, (3, 3), max_patches=50, random_state=42
+        )
+        patches_2 = image.extract_patches_2d(
+            i, (5, 5), max_patches=150, random_state=42
+        )
+        hog_image = hog(
+            i[:, :, 0], orientations=8, pixels_per_cell=(3, 3),
+            cells_per_block=(1, 1)
+        )
+        res = np.concatenate((
+            # i.ravel(),
+            # patches_1.ravel(),
+            # patches_2.ravel(),
+            hog_image.ravel(),
+        ))
+        res_list.append(res)
+    return res_list
 
 
-fit_one_epoch(train_gen, val_gen)
+X_train = change(X_train)
+X_test = change(X_test)
+print(np.shape(X_train))
+
+# 训练 SVM 分类器
+print('Start Train')
+model = SVC(kernel='rbf', C=5, gamma=0.01)
+print(np.shape(X_train), np.shape(X_test))
+model.fit(X_train, y_train)
+
+# 预测测试集并评估准确性
+y_pred = model.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+report = classification_report(y_test, y_pred)
+print("Accuracy:", accuracy)
+print("Classification report:", report)

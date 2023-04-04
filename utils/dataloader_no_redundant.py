@@ -14,11 +14,11 @@ class Dataset(Dataset):
         self, path, train,
         transform: Optional[Callable] = None,
         augmentation: bool = False,
-        picture_dim_type: str = "torch"
+        picture_dim_type: str = "CHW"
     ):
         """
         Args:
-            picture_dim_type (str): "svm" image.shape = (imageshape[0] * imageshape[1],), "torch" image.shape = (1, imageshape[0], imageshape[1])
+            picture_dim_type (str): "linear" image.shape = (imageshape[0] * imageshape[1],), "CHW" image.shape = (1, imageshape[0], imageshape[1]), "HWC" image.shape = (imageshape[0], imageshape[1], 1),
         """
         super(Dataset, self).__init__()
 
@@ -59,6 +59,8 @@ class Dataset(Dataset):
         self.__transform = transform
         self.__picture_dim_type = picture_dim_type
 
+        self.__s_1 = self.__s_2 = None
+
         print('length of dataset is', self.__no_redundant_length, end=", ")
         print('shape of dataset is', self.__no_redundant_data_shape, end=", ")
         print('shape of image is', self.__image_shape)
@@ -81,13 +83,33 @@ class Dataset(Dataset):
 
     @property
     def image_shape(self):
-        if self.__picture_dim_type == "torch":
+        if self.__picture_dim_type == "CHW":
             return 1, *self.__image_shape
-        elif self.__picture_dim_type == "svm":
+        elif self.__picture_dim_type == "HWC":
+            return *self.__image_shape, 1
+        elif self.__picture_dim_type == "linear":
             return (self.__image_shape[0] * self.__image_shape[1],)
         else:
             return self.__image_shape
-        
+    
+    def __get_data_target(self):
+        if self.__s_1 is None or self.__s_2 is None:
+            self.__s_1 = []
+            self.__s_2 = []
+            for i in self:
+                self.__s_1.append(i[0])
+                self.__s_2.append(i[1])
+
+    @property
+    def data(self):
+        self.__get_data_target()
+        return self.__s_1
+    
+    @property
+    def targets(self):
+        self.__get_data_target()
+        return self.__s_2
+
     def __len__(self):
         return self.__no_redundant_length
 
@@ -124,7 +146,7 @@ class Dataset(Dataset):
         # 归一预处理
         image = np.array(image, dtype=np.float32) / 255
 
-        if self.__picture_dim_type == "torch":
+        if self.__picture_dim_type == "CHW":
             # 添加通道维度，更换顺序（通道放在最前面）
             # 最终转变为标准的 [C, H, W] 张量
             # <---            C              --->
@@ -132,7 +154,9 @@ class Dataset(Dataset):
             # [ [x, x, x], [x, x, x], [x, x, x] ]
             image = np.expand_dims(image, axis=2)
             image = np.transpose(image, (2, 0, 1))
-        elif self.__picture_dim_type == "svm":
+        elif self.__picture_dim_type == "HWC":
+            image = np.expand_dims(image, axis=2)
+        elif self.__picture_dim_type == "linear":
             image = image.reshape(self.__image_shape[0] * self.__image_shape[1])
         else:
             pass
